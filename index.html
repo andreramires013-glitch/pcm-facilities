@@ -2029,8 +2029,41 @@ document.getElementById('btnSeedExample').addEventListener('click', async ()=>{
 
 /* ===================== QR CODE ===================== */
 function equipUrl(equipId){
-  const base = location.href.split('#')[0];
+  const base = location.href.split('#')[0].split('?')[0];
+  // Inclui as credenciais Firebase na URL do QR pra que o celular
+  // consiga conectar ao banco sem precisar configurar nada manualmente
+  const cfg = fbConfig();
+  if(cfg && cfg.databaseURL){
+    const params = new URLSearchParams({
+      fbKey: cfg.apiKey || '',
+      fbDb: cfg.databaseURL || '',
+      fbProject: cfg.projectId || '',
+      fbDomain: cfg.authDomain || '',
+    });
+    return `${base}?${params.toString()}#equip=${equipId}`;
+  }
   return `${base}#equip=${equipId}`;
+}
+
+// Captura credenciais Firebase passadas via URL (quando celular abre pelo QR Code)
+function capturarCredenciaisUrl(){
+  const params = new URLSearchParams(location.search);
+  if(params.get('fbKey') && params.get('fbDb')){
+    const existente = fbConfig();
+    // Só salva se não tiver credenciais já configuradas, ou se vier da URL
+    if(!existente || !existente.apiKey){
+      const cfg = {
+        apiKey: params.get('fbKey'),
+        databaseURL: params.get('fbDb'),
+        projectId: params.get('fbProject') || '',
+        authDomain: params.get('fbDomain') || '',
+        storageBucket: '', messagingSenderId: '', appId: ''
+      };
+      localStorage.setItem('pcmFacilities_firebaseConfig', JSON.stringify(cfg));
+      localStorage.setItem('pcmFacilities_modo', 'firebase');
+      APP_CONFIG.modoArmazenamento = 'firebase';
+    }
+  }
 }
 function openQrModal(equipId){
   const eq = equipamentos.find(e=>e.id===equipId);
@@ -2161,15 +2194,28 @@ function renderFicha(equipId){
     });
   }
 }
-function handleHashRoute(){
+async function handleHashRoute(){
   const hash = location.hash;
   if(hash.startsWith('#equip=')){
-    renderFicha(hash.replace('#equip=',''));
+    const equipId = hash.replace('#equip=','');
+    // Se os dados ainda não foram carregados (ex: celular abrindo direto pelo QR),
+    // carrega do Firebase antes de tentar mostrar a ficha
+    if(equipamentos.length === 0){
+      const overlay = document.getElementById('fichaOverlay');
+      const content = document.getElementById('fichaContent');
+      overlay.style.display = 'block';
+      content.innerHTML = `<div style="padding:30px;text-align:center;color:var(--text-dim);">
+        <div style="font-size:28px;margin-bottom:10px;">⏳</div>
+        <div>Carregando dados do equipamento...</div>
+      </div>`;
+      await loadData();
+    }
+    renderFicha(equipId);
   } else {
     document.getElementById('fichaOverlay').style.display = 'none';
   }
 }
-window.addEventListener('hashchange', handleHashRoute);
+window.addEventListener('hashchange', ()=>{ handleHashRoute(); });
 
 /* ===================== INIT ===================== */
 async function renderAll(){
@@ -2186,8 +2232,9 @@ async function renderAll(){
   renderIndicadores();
 }
 (async function init(){
+  capturarCredenciaisUrl(); // captura credenciais Firebase da URL (quando abre pelo QR no celular)
   await loadData();
-  if(!equipamentos.length && !plano.length){
+  if(!equipamentos.length && !plano.length && APP_CONFIG.modoArmazenamento !== 'firebase'){
     const { eqs, planos } = buildExampleData();
     equipamentos = eqs; plano = planos;
     await saveEquip(); await savePlano();
