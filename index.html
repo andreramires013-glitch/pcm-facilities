@@ -445,7 +445,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       <div class="field"><label>Status</label>
         <select id="eqStatus"><option>Operacional</option><option>Em Manutenção</option><option>Parado</option><option>Desativado</option></select>
       </div>
+      <div class="field full">
+        <label>Diagrama Elétrico (PDF ou imagem — máx. 3MB)</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+          <label class="btn secondary" style="cursor:pointer;font-size:12px;">
+            📎 Selecionar arquivo
+            <input type="file" id="eqDiagramaFile" accept=".pdf,.png,.jpg,.jpeg,.svg" style="display:none;">
+          </label>
+          <span id="eqDiagramaLabel" style="color:var(--text-dim);font-size:12px;">Nenhum arquivo selecionado</span>
+          <button type="button" class="btn danger" id="btnRemoverDiagrama" style="display:none;font-size:11px;padding:5px 10px;">✕ Remover</button>
+        </div>
+        <p style="color:var(--text-dim);font-size:11px;margin:4px 0 0;">O arquivo fica armazenado no Firebase e aparece na ficha do equipamento (QR Code). Limite: 3MB por arquivo.</p>
+      </div>
       <input type="hidden" id="eqEditId" value="">
+      <input type="hidden" id="eqDiagramaBase64" value="">
+      <input type="hidden" id="eqDiagramaNome" value="">
+      <input type="hidden" id="eqDiagramaTipo" value="">
       <div class="full" style="display:flex;gap:10px;justify-content:space-between;align-items:center;">
         <span id="editModeLabel" style="display:none;color:var(--amber);font-size:12px;font-weight:600;">✏️ Editando equipamento existente — o QR Code não muda</span>
         <span></span>
@@ -944,6 +959,37 @@ document.getElementById('tabs').addEventListener('click', (e)=>{
 document.getElementById('btnRefresh').addEventListener('click', ()=>{ renderAll(); showToast('Dados atualizados'); });
 
 /* ===================== EQUIPAMENTOS ===================== */
+/* ===================== UPLOAD DE DIAGRAMA ELÉTRICO ===================== */
+document.getElementById('eqDiagramaFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const maxSize = 3 * 1024 * 1024; // 3MB
+  if(file.size > maxSize){
+    showToast('⚠️ Arquivo muito grande — limite é 3MB');
+    e.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    document.getElementById('eqDiagramaBase64').value = ev.target.result;
+    document.getElementById('eqDiagramaNome').value = file.name;
+    document.getElementById('eqDiagramaTipo').value = file.type;
+    document.getElementById('eqDiagramaLabel').textContent = `📄 ${file.name} (${(file.size/1024).toFixed(0)}KB)`;
+    document.getElementById('eqDiagramaLabel').style.color = '#4ade80';
+    document.getElementById('btnRemoverDiagrama').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById('btnRemoverDiagrama').addEventListener('click', ()=>{
+  document.getElementById('eqDiagramaBase64').value = '';
+  document.getElementById('eqDiagramaNome').value = '';
+  document.getElementById('eqDiagramaTipo').value = '';
+  document.getElementById('eqDiagramaLabel').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('eqDiagramaLabel').style.color = '';
+  document.getElementById('eqDiagramaFile').value = '';
+  document.getElementById('btnRemoverDiagrama').style.display = 'none';
+});
+
 document.getElementById('btnAddEquip').addEventListener('click', async ()=>{
   const tag = document.getElementById('eqTag').value.trim();
   const nome = document.getElementById('eqNome').value.trim();
@@ -965,6 +1011,9 @@ document.getElementById('btnAddEquip').addEventListener('click', async ()=>{
     telefone: document.getElementById('eqTelefone').value.trim().replace(/\D/g,'') || '',
     frequencia: document.getElementById('eqFrequencia').value,
     status: document.getElementById('eqStatus').value,
+    diagrama: document.getElementById('eqDiagramaBase64').value || null,
+    diagramaNome: document.getElementById('eqDiagramaNome').value || null,
+    diagramaTipo: document.getElementById('eqDiagramaTipo').value || null,
   };
 
   if(editId){
@@ -1005,6 +1054,15 @@ function preencherFormularioEquip(eq){
   document.getElementById('eqTelefone').value = eq.telefone || '';
   document.getElementById('eqFrequencia').value = eq.frequencia || 'Mensal';
   document.getElementById('eqStatus').value = eq.status || 'Operacional';
+  // diagrama existente
+  if(eq.diagrama && eq.diagramaNome){
+    document.getElementById('eqDiagramaBase64').value = eq.diagrama;
+    document.getElementById('eqDiagramaNome').value = eq.diagramaNome;
+    document.getElementById('eqDiagramaTipo').value = eq.diagramaTipo || '';
+    document.getElementById('eqDiagramaLabel').textContent = `📄 ${eq.diagramaNome} (já anexado)`;
+    document.getElementById('eqDiagramaLabel').style.color = '#4ade80';
+    document.getElementById('btnRemoverDiagrama').style.display = 'inline-block';
+  }
 
   document.getElementById('editModeLabel').style.display = 'inline';
   document.getElementById('btnCancelEditEquip').style.display = 'inline-block';
@@ -1015,6 +1073,13 @@ function preencherFormularioEquip(eq){
 function cancelarEdicaoEquip(){
   document.getElementById('eqEditId').value = '';
   ['eqCodigo','eqTag','eqNome','eqLocalizacao','eqArea','eqFabricante','eqModelo','eqSerie','eqDataInstalacao','eqResponsavel','eqTelefone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('eqDiagramaBase64').value = '';
+  document.getElementById('eqDiagramaNome').value = '';
+  document.getElementById('eqDiagramaTipo').value = '';
+  document.getElementById('eqDiagramaLabel').textContent = 'Nenhum arquivo selecionado';
+  document.getElementById('eqDiagramaLabel').style.color = '';
+  document.getElementById('eqDiagramaFile').value = '';
+  document.getElementById('btnRemoverDiagrama').style.display = 'none';
   document.getElementById('editModeLabel').style.display = 'none';
   document.getElementById('btnCancelEditEquip').style.display = 'none';
   document.getElementById('btnAddEquip').textContent = '+ Adicionar Equipamento';
@@ -2159,14 +2224,22 @@ function renderFicha(equipId){
 
       <div class="card">
         <h3>Documentos</h3>
-        <p style="color:var(--text-dim);font-size:11.5px;line-height:1.8;">
-          📄 Manual PDF — não anexado<br>
-          📄 PMOC — não anexado<br>
-          📐 Diagrama elétrico — não anexado<br>
-          📐 Diagrama mecânico — não anexado<br>
-          📷 Fotos — não anexadas<br>
-        </p>
-        <p style="color:var(--text-dim);font-size:10.5px;margin-top:8px;">Upload de documentos requer armazenamento de arquivos (fora do escopo deste protótipo em navegador).</p>
+        ${eq.diagrama ? `
+          <div style="margin-bottom:10px;">
+            <div style="color:#4ade80;font-size:12.5px;margin-bottom:8px;">📐 Diagrama Elétrico — <b>${eq.diagramaNome || 'arquivo anexado'}</b></div>
+            ${eq.diagramaTipo && eq.diagramaTipo.startsWith('image/') ? `
+              <img src="${eq.diagrama}" alt="Diagrama Elétrico" style="max-width:100%;border-radius:8px;margin-bottom:8px;">
+            ` : ''}
+            <a href="${eq.diagrama}" download="${eq.diagramaNome || 'diagrama'}" class="btn" style="font-size:12px;text-decoration:none;display:inline-block;">
+              ⬇ Baixar Diagrama
+            </a>
+            ${eq.diagramaTipo === 'application/pdf' ? `
+              <a href="${eq.diagrama}" target="_blank" class="btn secondary" style="font-size:12px;text-decoration:none;display:inline-block;margin-left:8px;">
+                👁 Visualizar PDF
+              </a>
+            ` : ''}
+          </div>
+        ` : `<p style="color:var(--text-dim);font-size:12px;">📐 Diagrama elétrico — não anexado<br><span style="font-size:11px;">Para anexar, edite o equipamento no dashboard e faça o upload do arquivo.</span></p>`}
       </div>
     </div>
   `;
