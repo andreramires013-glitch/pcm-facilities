@@ -707,14 +707,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
 
       <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
-        <label>🔐 Técnicos e PINs de Acesso</label>
-        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 12px;">Cadastre os técnicos com seus PINs. Ao registrar uma preventiva pelo QR Code, o sistema pedirá o PIN antes de confirmar. Se não houver técnicos cadastrados, o acesso é livre.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label>Nome do Técnico</label><input id="tecNome" placeholder="Ex: André Silva"></div>
-          <div class="field" style="margin:0;"><label>PIN (4 a 6 dígitos)</label><input id="tecPin" type="password" inputmode="numeric" maxlength="6" placeholder="Ex: 1234"></div>
-          <button class="btn" id="btnAddTecnico" style="height:36px;">+ Adicionar</button>
-        </div>
-        <div id="tecnicosLista" style="margin-top:6px;"></div>
+        <label>🔐 PIN de Acesso</label>
+        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0;">O PIN para registrar preventivas pelo QR Code é <b>1234</b>. Qualquer técnico que saiba o PIN pode registrar execuções.</p>
       </div>
 
       <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
@@ -754,39 +748,32 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
 <!-- Modal de Check-in (QR Code) -->
 <div id="checkinModal" style="display:none;position:fixed;inset:0;background:rgba(5,10,20,.88);z-index:1100;align-items:center;justify-content:center;">
-  <div style="background:var(--navy-800);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:28px;max-width:340px;width:92%;text-align:center;">
-    <div style="font-size:32px;margin-bottom:8px;">🔐</div>
-    <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:4px;" id="checkinModalTitle">Registrar Preventiva</div>
-    <div style="color:var(--text-dim);font-size:12px;margin-bottom:18px;" id="checkinModalSub">Identifique-se para confirmar a execução</div>
+  <div style="background:var(--navy-800);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:28px;max-width:360px;width:94%;">
+    <div style="font-size:30px;text-align:center;margin-bottom:8px;">✅</div>
+    <div style="font-weight:700;font-size:16px;color:#fff;text-align:center;margin-bottom:16px;">Registrar Preventiva</div>
 
-    <!-- Sem técnicos cadastrados: pede só o nome -->
-    <div id="checkinSemTecnicos" style="display:none;">
-      <div class="field" style="text-align:left;margin-bottom:14px;">
-        <label>Seu nome</label>
-        <input id="checkinNome" placeholder="Ex: André Silva" style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:11px;font-size:14px;">
-      </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Nome de quem executou</label>
+      <input id="checkinNome" placeholder="Ex: André Silva" style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:11px;font-size:14px;">
     </div>
 
-    <!-- Com técnicos cadastrados: pede PIN -->
-    <div id="checkinComTecnicos" style="display:none;">
-      <div style="color:var(--text-dim);font-size:11.5px;margin-bottom:12px;">Digite o PIN cadastrado para o seu usuário</div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>PIN de acesso</label>
       <input id="checkinPin" type="password" inputmode="numeric" maxlength="6"
-        placeholder="PIN"
-        style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:14px;font-size:24px;text-align:center;letter-spacing:8px;margin-bottom:6px;">
-      <div style="color:var(--text-dim);font-size:11px;margin-bottom:14px;">O nome será registrado automaticamente pelo PIN</div>
+        placeholder="Digite o PIN"
+        style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:11px;font-size:18px;text-align:center;letter-spacing:6px;">
     </div>
 
-    <!-- Observação opcional -->
-    <div class="field" style="text-align:left;margin-bottom:16px;">
-      <label>Observação (opcional)</label>
-      <input id="checkinObs" placeholder="Ex: Troca de filtro realizada" style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:10px;font-size:13px;">
+    <div class="field" style="margin-bottom:16px;">
+      <label>O que foi feito</label>
+      <input id="checkinObs" placeholder="Ex: Limpeza de filtros, verificação geral..." style="width:100%;background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:11px;font-size:13px;">
     </div>
 
-    <div id="checkinErro" style="color:#f17b70;font-size:12px;margin-bottom:10px;display:none;"></div>
+    <div id="checkinErro" style="color:#f17b70;font-size:12px;margin-bottom:10px;text-align:center;display:none;"></div>
 
     <div style="display:flex;gap:8px;">
-      <button class="btn secondary" id="btnCheckinCancelar" style="flex:1;">Cancelar</button>
-      <button class="btn" id="btnCheckinConfirmar" style="flex:1;">✓ Confirmar</button>
+      <button class="btn secondary" id="btnCheckinCancelar" style="flex:1;padding:11px;">Cancelar</button>
+      <button class="btn" id="btnCheckinConfirmar" style="flex:1;padding:11px;">✓ Confirmar</button>
     </div>
   </div>
 </div>
@@ -975,54 +962,37 @@ function loadTecnicos(){
 }
 
 /* ===================== MODAL DE CHECK-IN (QR Code) ===================== */
+const PIN_FIXO = '1234';
 let _checkinCallback = null;
 
 function abrirCheckin(equipId, atividade, callback){
   _checkinCallback = callback;
-  const modal = document.getElementById('checkinModal');
-  document.getElementById('checkinModalTitle').textContent = 'Registrar Preventiva';
-  document.getElementById('checkinModalSub').textContent = atividade || 'Identifique-se para confirmar a execução';
   document.getElementById('checkinNome').value = '';
   document.getElementById('checkinPin').value = '';
   document.getElementById('checkinObs').value = '';
   document.getElementById('checkinErro').style.display = 'none';
-
-  const temTecnicos = tecnicos.length > 0;
-  document.getElementById('checkinSemTecnicos').style.display = temTecnicos ? 'none' : 'block';
-  document.getElementById('checkinComTecnicos').style.display = temTecnicos ? 'block' : 'none';
-
-  modal.style.display = 'flex';
-  setTimeout(()=>{
-    const input = temTecnicos ? document.getElementById('checkinPin') : document.getElementById('checkinNome');
-    input.focus();
-  }, 100);
+  document.getElementById('checkinModal').style.display = 'flex';
+  setTimeout(()=> document.getElementById('checkinNome').focus(), 100);
 }
 
 function jaRegistradoHoje(tag){
   const hoje = new Date().toISOString().slice(0,10);
-  return historico.find(h => h.tag === tag && h.data === hoje && (h.origem === 'QR Code' || h.origem === 'Check-in'));
+  return historico.find(h => h.tag === tag && h.data === hoje && h.origem === 'QR Code');
 }
 
 document.getElementById('btnCheckinConfirmar').addEventListener('click', ()=>{
   const erroEl = document.getElementById('checkinErro');
+  const nome = document.getElementById('checkinNome').value.trim();
+  const pin = document.getElementById('checkinPin').value.trim();
   const obs = document.getElementById('checkinObs').value.trim();
-  let nome = '';
-  let tecnico = null;
 
-  if(tecnicos.length > 0){
-    const pin = document.getElementById('checkinPin').value.trim();
-    if(!pin){ erroEl.textContent = 'Digite seu PIN.'; erroEl.style.display = 'block'; return; }
-    const found = tecnicos.find(t => t.pin === pin);
-    if(!found){ erroEl.textContent = 'PIN incorreto. Tente novamente.'; erroEl.style.display = 'block'; document.getElementById('checkinPin').value = ''; document.getElementById('checkinPin').focus(); return; }
-    tecnico = found;
-    nome = found.nome;
-  } else {
-    nome = document.getElementById('checkinNome').value.trim();
-    if(!nome){ erroEl.textContent = 'Digite seu nome para continuar.'; erroEl.style.display = 'block'; return; }
-  }
+  if(!nome){ erroEl.textContent = 'Digite o nome de quem executou.'; erroEl.style.display = 'block'; document.getElementById('checkinNome').focus(); return; }
+  if(!pin){ erroEl.textContent = 'Digite o PIN de acesso.'; erroEl.style.display = 'block'; document.getElementById('checkinPin').focus(); return; }
+  if(pin !== PIN_FIXO){ erroEl.textContent = 'PIN incorreto. Tente novamente.'; erroEl.style.display = 'block'; document.getElementById('checkinPin').value = ''; document.getElementById('checkinPin').focus(); return; }
+  if(!obs){ erroEl.textContent = 'Descreva o que foi feito.'; erroEl.style.display = 'block'; document.getElementById('checkinObs').focus(); return; }
 
   document.getElementById('checkinModal').style.display = 'none';
-  if(_checkinCallback) _checkinCallback({ nome, tecnico, obs });
+  if(_checkinCallback) _checkinCallback({ nome, obs });
   _checkinCallback = null;
 });
 
@@ -1031,11 +1001,10 @@ document.getElementById('btnCheckinCancelar').addEventListener('click', ()=>{
   _checkinCallback = null;
 });
 
-document.getElementById('checkinPin').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter') document.getElementById('btnCheckinConfirmar').click();
-});
-document.getElementById('checkinNome').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter') document.getElementById('btnCheckinConfirmar').click();
+['checkinPin','checkinObs'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') document.getElementById('btnCheckinConfirmar').click();
+  });
 });
 
 /* ===================== MODAL DE PIN ===================== */
@@ -2440,23 +2409,15 @@ function renderFicha(equipId){
 
   const btnExec = document.getElementById('btnExecFicha');
   if(btnExec){
-    // Sem técnicos cadastrados: bloqueia o registro completamente
-    if(!tecnicos.length){
-      btnExec.disabled = true;
-      btnExec.textContent = '🔒 Cadastre técnicos com PIN para registrar';
-      btnExec.style.background = 'rgba(255,255,255,.05)';
-      btnExec.style.color = 'var(--text-dim)';
-      btnExec.style.cursor = 'not-allowed';
-    } else {
-      btnExec.addEventListener('click', ()=>{
-        const tipo = btnExec.dataset.tipo;
-        const atividadeLabel = proxima ? proxima.atividade : `Preventiva ${eq.frequencia} — ${eq.nome}`;
-        abrirCheckin(eq.id, atividadeLabel, async ({ nome, obs })=>{
-          if(tipo === 'livre') await registrarExecucaoAvulsa(eq, equipId, nome, obs);
-          else await registrarExecucaoFicha(btnExec.dataset.id, eq, equipId, nome, obs);
-        });
+    btnExec.textContent = 'Registrar preventiva';
+    btnExec.addEventListener('click', ()=>{
+      const tipo = btnExec.dataset.tipo;
+      const atividadeLabel = proxima ? proxima.atividade : `Preventiva ${eq.frequencia} — ${eq.nome}`;
+      abrirCheckin(eq.id, atividadeLabel, async ({ nome, obs })=>{
+        if(tipo === 'livre') await registrarExecucaoAvulsa(eq, equipId, nome, obs);
+        else await registrarExecucaoFicha(btnExec.dataset.id, eq, equipId, nome, obs);
       });
-    }
+    });
   }
 }
 
