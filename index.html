@@ -373,6 +373,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     <div class="filter-bar">
       <div><label>Área</label><select id="fArea"><option value="">Todas</option></select></div>
+      <div><label>Localização</label><select id="fLocalizacao"><option value="">Todas</option></select></div>
       <div><label>Criticidade</label><select id="fCrit"><option value="">Todas</option><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
       <div><label>Responsável</label><select id="fResp"><option value="">Todos</option></select></div>
       <div><label>Status</label><select id="fStatus"><option value="">Todos</option><option>Executada</option><option>Programada</option><option>Próxima do Vencimento</option><option>Vencida</option></select></div>
@@ -397,18 +398,28 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="status-list" id="statusList"></div>
       </div>
       <div class="card">
-        <h3>Preventivas por Área</h3>
-        <div class="chart-wrap"><canvas id="chartArea"></canvas></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Preventivas por Categoria</h3>
+          <button onclick="downloadChart('chartCategoria','preventivas-por-categoria')" style="background:none;border:1px solid rgba(255,255,255,.15);color:var(--text-dim);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">⬇ Baixar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="chartCategoria"></canvas></div>
       </div>
       <div class="card">
-        <h3>Equipamentos com Mais Pendências</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Equipamentos com Mais Pendências</h3>
+          <button onclick="downloadChart('chartPendencias','pendencias-por-equipamento')" style="background:none;border:1px solid rgba(255,255,255,.15);color:var(--text-dim);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">⬇ Baixar</button>
+        </div>
         <div class="chart-wrap"><canvas id="chartPendencias"></canvas></div>
       </div>
 
       <div class="card span3">
-        <h3>Programadas x Executadas — Evolução Mensal</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <h3 style="margin:0;">Programadas x Executadas — Evolução Mensal</h3>
+          <button onclick="downloadChart('chartMensal','evolucao-mensal')" style="background:none;border:1px solid rgba(255,255,255,.15);color:var(--text-dim);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">⬇ Baixar</button>
+        </div>
         <div class="chart-wrap xltall"><canvas id="chartMensal"></canvas></div>
       </div>
+
     </div>
   </div>
 
@@ -471,9 +482,13 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
     </div>
 
-    <div class="toolbar">
-      <input id="searchEquip" placeholder="Buscar por TAG, nome ou área..." style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:7px 10px;font-size:12.5px;min-width:260px;">
-      <span style="color:var(--text-dim);font-size:12px;" id="countEquip"></span>
+    <div class="filter-bar" style="margin-bottom:10px;">
+      <div><label>Buscar</label><input id="searchEquip" placeholder="TAG, nome ou área..." style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;min-width:200px;"></div>
+      <div><label>Categoria</label><select id="fEquipCategoria" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option><option>Elétrica</option><option>Refrigeração</option><option>Ar Comprimido/Gases</option><option>Estruturais</option><option>Segurança</option></select></div>
+      <div><label>Criticidade</label><select id="fEquipCriticidade" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+      <div><label>Status</label><select id="fEquipStatus" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todos</option><option>Operacional</option><option>Em Manutenção</option><option>Parado</option><option>Desativado</option></select></div>
+      <div><label>Área</label><select id="fEquipArea" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option></select></div>
+      <span style="color:var(--text-dim);font-size:12px;align-self:center;" id="countEquip"></span>
     </div>
     <div class="table-wrap">
       <table>
@@ -506,9 +521,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
     </div>
 
-    <div class="toolbar">
-      <input id="searchPlano" placeholder="Buscar atividade ou equipamento..." style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:7px 10px;font-size:12.5px;min-width:260px;">
-      <span style="color:var(--text-dim);font-size:12px;" id="countPlano"></span>
+    <div class="filter-bar" style="margin-bottom:10px;">
+      <div><label>Buscar</label><input id="searchPlano" placeholder="Atividade ou equipamento..." style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;min-width:200px;"></div>
+      <div><label>Status</label><select id="fPlanoStatus" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todos</option><option>Executada</option><option>Programada</option><option>Próxima do Vencimento</option><option>Vencida</option></select></div>
+      <div><label>Frequência</label><select id="fPlanoFreq" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option><option>Semanal</option><option>Quinzenal</option><option>Mensal</option><option>Bimestral</option><option>Trimestral</option><option>Quadrimestral</option><option>Semestral</option><option>Anual</option></select></div>
+      <div><label>Responsável</label><select id="fPlanoResp" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todos</option></select></div>
+      <span style="color:var(--text-dim);font-size:12px;align-self:center;" id="countPlano"></span>
     </div>
     <div class="table-wrap">
       <table>
@@ -623,6 +641,15 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <!-- INDICADORES -->
   <div class="panel" id="panel-indicadores">
     <h1 class="page-title">Indicadores Gerenciais</h1>
+
+    <div class="filter-bar" style="margin-bottom:12px;">
+      <div><label>Responsável</label><select id="fIndResp" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todos</option></select></div>
+      <div><label>Área</label><select id="fIndArea" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option></select></div>
+      <div><label>Categoria</label><select id="fIndCategoria" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option><option>Elétrica</option><option>Refrigeração</option><option>Ar Comprimido/Gases</option><option>Estruturais</option><option>Segurança</option></select></div>
+      <div><label>Frequência</label><select id="fIndFreq" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todas</option><option>Semanal</option><option>Quinzenal</option><option>Mensal</option><option>Bimestral</option><option>Trimestral</option><option>Quadrimestral</option><option>Semestral</option><option>Anual</option></select></div>
+      <div><label>Status</label><select id="fIndStatus" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:6px 8px;font-size:12.5px;"><option value="">Todos</option><option>Executada</option><option>Programada</option><option>Próxima do Vencimento</option><option>Vencida</option></select></div>
+    </div>
+
     <div class="grid">
       <div class="card">
         <h3>Preventivas por Responsável</h3>
@@ -688,15 +715,52 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         </div>
       </div>
       <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
+        <label>🔔 Alertas de Vencimento — Email</label>
+        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 12px;">
+          Clique no botão para abrir seu email já preenchido com a lista de equipamentos <b>vencidos</b> e <b>próximos do vencimento</b> (até 7 dias). Basta revisar e enviar.
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input id="alertEmail" type="email" placeholder="seu@email.com" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:9px 12px;font-size:13px;min-width:240px;">
+          <button class="btn" id="btnEnviarAlertaEmail">📧 Abrir Email com Alertas</button>
+        </div>
+      </div>
+
+      <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
+        <label>📱 Preventivas da Semana — WhatsApp</label>
+        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 12px;">
+          Gera automaticamente a lista das preventivas programadas para esta semana e abre o WhatsApp pronto para enviar. Informe o número do destinatário (com DDI+DDD).
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input id="alertWhatsApp" type="tel" placeholder="5592999999999" style="background:var(--navy-700);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:8px;padding:9px 12px;font-size:13px;min-width:200px;">
+          <button class="btn" id="btnEnviarWhatsApp">📲 Abrir WhatsApp com Preventivas</button>
+        </div>
+        <p style="color:var(--text-dim);font-size:11.5px;margin:8px 0 0;">Ex: <b>5592999999999</b> (55 = Brasil, 92 = Manaus, depois o número)</p>
+      </div>
+
+      <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
         <label>Backup dos Dados</label>
         <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 10px;">Exporte todos os dados (equipamentos, plano, histórico e OS) em um arquivo JSON, ou importe um backup salvo anteriormente.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn secondary" id="btnExport">⬇ Exportar Backup (JSON)</button>
+          <button class="btn secondary" id="btnExport">⬇ Exportar Backup Completo (JSON)</button>
           <label class="btn secondary" style="cursor:pointer;">⬆ Importar Backup
             <input type="file" id="importFile" accept=".json" style="display:none;">
           </label>
         </div>
       </div>
+
+      <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
+        <label>📋 Histórico de Execuções</label>
+        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 12px;">
+          Baixe o histórico completo em Excel (CSV) para guardar um arquivo permanente. Após baixar, você pode limpar o histórico do sistema para liberar espaço — os dados baixados ficam salvos no seu computador.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <button class="btn" id="btnExportHistCSV">⬇ Baixar Histórico (.csv / Excel)</button>
+          <button class="btn danger" id="btnClearHistorico">🗑 Limpar Histórico de Execuções</button>
+          <span id="countHistConfig" style="color:var(--text-dim);font-size:12px;"></span>
+        </div>
+        <p style="color:var(--amber);font-size:11.5px;margin:8px 0 0;">⚠️ A limpeza do histórico é permanente. Sempre baixe o CSV antes de limpar.</p>
+      </div>
+
       <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
         <label>Categorias de Equipamento</label>
         <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0;">Elétrica · Refrigeração · Ar Comprimido/Gases · Estruturais · Segurança</p>
@@ -718,7 +782,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
       <div class="field full" style="margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">
         <label>Zona de Risco</label>
-        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 10px;">Apaga permanentemente todos os equipamentos, plano, histórico e OS deste navegador.</p>
+        <p style="color:var(--text-dim);font-size:12.5px;margin:4px 0 10px;">Apaga permanentemente todos os equipamentos, plano, histórico e OS.</p>
         <button class="btn danger" id="btnClearAll">🗑 Limpar Todos os Dados</button>
       </div>
     </div>
@@ -1236,12 +1300,40 @@ function cancelarEdicaoEquip(){
 }
 document.getElementById('btnCancelEditEquip').addEventListener('click', cancelarEdicaoEquip);
 
+function popularFiltroArea(){
+  const sel = document.getElementById('fEquipArea');
+  if(!sel) return;
+  const areas = [...new Set(equipamentos.map(e=>e.area).filter(Boolean))].sort();
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Todas</option>' + areas.map(a=>`<option value="${a}"${a===atual?' selected':''}>${a}</option>`).join('');
+}
+
+function popularFiltroResp(){
+  const sel = document.getElementById('fPlanoResp');
+  if(!sel) return;
+  const resps = [...new Set(plano.map(p=>p.responsavel).filter(Boolean))].sort();
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Todos</option>' + resps.map(r=>`<option value="${r}"${r===atual?' selected':''}>${r}</option>`).join('');
+}
+
 function renderEquipTable(){
   const tbody = document.getElementById('equipTableBody');
-  const search = document.getElementById('searchEquip').value.toLowerCase();
-  const filtered = equipamentos.filter(eq =>
-    eq.tag.toLowerCase().includes(search) || eq.nome.toLowerCase().includes(search) || eq.area.toLowerCase().includes(search)
-  );
+  const search = document.getElementById('searchEquip')?.value.toLowerCase() || '';
+  const fCat   = document.getElementById('fEquipCategoria')?.value || '';
+  const fCrit  = document.getElementById('fEquipCriticidade')?.value || '';
+  const fStat  = document.getElementById('fEquipStatus')?.value || '';
+  const fArea  = document.getElementById('fEquipArea')?.value || '';
+
+  const filtered = equipamentos.filter(eq => {
+    const matchSearch = !search || eq.tag.toLowerCase().includes(search) || eq.nome.toLowerCase().includes(search) || (eq.area||'').toLowerCase().includes(search) || (eq.localizacao||'').toLowerCase().includes(search);
+    const matchCat  = !fCat  || eq.categoria === fCat;
+    const matchCrit = !fCrit || eq.criticidade === fCrit;
+    const matchStat = !fStat || (eq.status||'Operacional') === fStat;
+    const matchArea = !fArea || eq.area === fArea;
+    return matchSearch && matchCat && matchCrit && matchStat && matchArea;
+  });
+
+  popularFiltroArea();
   tbody.innerHTML = filtered.map(eq => `
     <tr>
       <td>${eq.codigo || '—'}</td>
@@ -1283,6 +1375,9 @@ function renderEquipTable(){
   });
 }
 document.getElementById('searchEquip').addEventListener('input', renderEquipTable);
+['fEquipCategoria','fEquipCriticidade','fEquipStatus','fEquipArea'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderEquipTable);
+});
 
 function renderPlanoEquipSelect(){
   const sel = document.getElementById('plEquip');
@@ -1322,11 +1417,24 @@ document.getElementById('btnAddPlano').addEventListener('click', async ()=>{
 
 function renderPlanoTable(){
   const tbody = document.getElementById('planoTableBody');
-  const search = document.getElementById('searchPlano').value.toLowerCase();
+  const search  = document.getElementById('searchPlano')?.value.toLowerCase() || '';
+  const fStat   = document.getElementById('fPlanoStatus')?.value || '';
+  const fFreq   = document.getElementById('fPlanoFreq')?.value || '';
+  const fResp   = document.getElementById('fPlanoResp')?.value || '';
+
+  popularFiltroResp();
+
   const rows = plano.map(item => {
     const eq = equipamentos.find(e => e.id === item.equipId) || {tag:'—', nome:'(equipamento removido)'};
     return {...item, eq};
-  }).filter(r => r.atividade.toLowerCase().includes(search) || r.eq.nome.toLowerCase().includes(search) || r.eq.tag.toLowerCase().includes(search));
+  }).filter(r => {
+    const status = computeStatus(r);
+    const matchSearch = !search || r.atividade.toLowerCase().includes(search) || r.eq.nome.toLowerCase().includes(search) || r.eq.tag.toLowerCase().includes(search);
+    const matchStat = !fStat || status === fStat;
+    const matchFreq = !fFreq || r.frequencia === fFreq;
+    const matchResp = !fResp || r.responsavel === fResp;
+    return matchSearch && matchStat && matchFreq && matchResp;
+  });
 
   tbody.innerHTML = rows.map(r => {
     const status = computeStatus(r);
@@ -1383,6 +1491,9 @@ function renderPlanoTable(){
   });
 }
 document.getElementById('searchPlano').addEventListener('input', renderPlanoTable);
+['fPlanoStatus','fPlanoFreq','fPlanoResp'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', renderPlanoTable);
+});
 
 function nextDateByFrequency(fromIso, freq){
   const d = new Date(fromIso+'T00:00:00');
@@ -1781,11 +1892,18 @@ document.getElementById('btnAddHistManual').addEventListener('click', async ()=>
 
 /* ===================== FILTROS DASHBOARD ===================== */
 function renderFilterOptions(){
-  const areas = [...new Set(equipamentos.map(e=>e.area))].sort();
-  const resps = [...new Set(equipamentos.map(e=>e.responsavel))].sort();
+  const areas = [...new Set(equipamentos.map(e=>e.area).filter(Boolean))].sort();
+  const locs  = [...new Set(equipamentos.map(e=>e.localizacao).filter(Boolean))].sort();
+  const resps = [...new Set(equipamentos.map(e=>e.responsavel).filter(Boolean))].sort();
+
   const fArea = document.getElementById('fArea'); const cur1 = fArea.value;
   fArea.innerHTML = `<option value="">Todas</option>` + areas.map(a=>`<option>${a}</option>`).join('');
   fArea.value = cur1;
+
+  const fLoc = document.getElementById('fLocalizacao'); const curLoc = fLoc.value;
+  fLoc.innerHTML = `<option value="">Todas</option>` + locs.map(l=>`<option>${l}</option>`).join('');
+  fLoc.value = curLoc;
+
   const fResp = document.getElementById('fResp'); const cur2 = fResp.value;
   fResp.innerHTML = `<option value="">Todos</option>` + resps.map(r=>`<option>${r}</option>`).join('');
   fResp.value = cur2;
@@ -1800,12 +1918,13 @@ function renderFilterOptions(){
   fAno.innerHTML = `<option value="">Todos</option>` + anos.map(a=>`<option>${a}</option>`).join('');
   fAno.value = cur4;
 }
-['fArea','fCrit','fResp','fStatus','fMes','fAno'].forEach(id => {
+['fArea','fLocalizacao','fCrit','fResp','fStatus','fMes','fAno'].forEach(id => {
   document.getElementById(id).addEventListener('change', renderDashboard);
 });
 
 function getFilteredPlanoRows(){
   const fArea = document.getElementById('fArea').value;
+  const fLoc  = document.getElementById('fLocalizacao').value;
   const fCrit = document.getElementById('fCrit').value;
   const fResp = document.getElementById('fResp').value;
   const fStatus = document.getElementById('fStatus').value;
@@ -1817,6 +1936,7 @@ function getFilteredPlanoRows(){
   }).filter(r=>{
     if(!r.eq) return false;
     if(fArea && r.eq.area !== fArea) return false;
+    if(fLoc  && r.eq.localizacao !== fLoc) return false;
     if(fCrit && r.eq.criticidade !== fCrit) return false;
     if(fResp && r.responsavel !== fResp) return false;
     if(fStatus && r.status !== fStatus) return false;
@@ -1874,10 +1994,10 @@ function renderDashboard(){
     </div>
   `).join('');
 
-  // por área
-  const byArea = {};
-  rows.forEach(r=>{ byArea[r.eq.area] = (byArea[r.eq.area]||0)+1; });
-  renderBarChart('chartArea', Object.keys(byArea), Object.values(byArea), '#2e75b6');
+  // por categoria
+  const byCategoria = {};
+  rows.forEach(r=>{ byCategoria[r.eq.categoria] = (byCategoria[r.eq.categoria]||0)+1; });
+  renderBarChart('chartCategoria', Object.keys(byCategoria), Object.values(byCategoria), '#2e75b6');
 
   // por criticidade (donut)
   // (gráfico de criticidade removido do Dashboard a pedido — segue disponível na aba Indicadores via Aderência/outros recortes)
@@ -1913,6 +2033,18 @@ function renderDashboard(){
   });
   const sortedPend = Object.entries(pendByEquip).sort((a,b)=>b[1]-a[1]).slice(0,6);
   renderHorizontalBarChart('chartPendencias', sortedPend.map(p=>p[0]), sortedPend.map(p=>p[1]), '#e74c3c');
+
+  // gráfico de localização — agrupa equipamentos pela localização cadastrada
+}
+
+function downloadChart(canvasId, filename){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas){ showToast('Gráfico não encontrado'); return; }
+  const link = document.createElement('a');
+  link.download = `${filename}-${new Date().toISOString().slice(0,10)}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('✅ Gráfico baixado');
 }
 
 function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
@@ -2019,10 +2151,40 @@ function renderOS(){ /* aba Ordens de Serviço foi removida do sistema */ }
 
 /* ===================== INDICADORES ===================== */
 function renderIndicadores(){
+  // popular selects dinamicamente
+  const selResp = document.getElementById('fIndResp');
+  const selArea = document.getElementById('fIndArea');
+  if(selResp){
+    const resps = [...new Set(plano.map(p=>p.responsavel).filter(Boolean))].sort();
+    const curR = selResp.value;
+    selResp.innerHTML = '<option value="">Todos</option>' + resps.map(r=>`<option>${r}</option>`).join('');
+    selResp.value = curR;
+  }
+  if(selArea){
+    const areas = [...new Set(equipamentos.map(e=>e.area).filter(Boolean))].sort();
+    const curA = selArea.value;
+    selArea.innerHTML = '<option value="">Todas</option>' + areas.map(a=>`<option>${a}</option>`).join('');
+    selArea.value = curA;
+  }
+
+  const fResp = document.getElementById('fIndResp')?.value || '';
+  const fArea = document.getElementById('fIndArea')?.value || '';
+  const fCat  = document.getElementById('fIndCategoria')?.value || '';
+  const fFreq = document.getElementById('fIndFreq')?.value || '';
+  const fStat = document.getElementById('fIndStatus')?.value || '';
+
   const rows = plano.map(item=>{
     const eq = equipamentos.find(e=>e.id===item.equipId);
     return {...item, eq, status: computeStatus(item)};
-  }).filter(r=>r.eq);
+  }).filter(r=>{
+    if(!r.eq) return false;
+    if(fResp && r.responsavel !== fResp) return false;
+    if(fArea && r.eq.area !== fArea) return false;
+    if(fCat  && r.eq.categoria !== fCat) return false;
+    if(fFreq && r.frequencia !== fFreq) return false;
+    if(fStat && r.status !== fStat) return false;
+    return true;
+  });
 
   // por responsável
   const byResp = {};
@@ -2034,7 +2196,7 @@ function renderIndicadores(){
   rows.filter(r=>r.status==='Vencida').forEach(r=>{ vencArea[r.eq.area] = (vencArea[r.eq.area]||0)+1; });
   renderHorizontalBarChart('chartVencArea', Object.keys(vencArea), Object.values(vencArea), '#e74c3c');
 
-  // pareto de atrasos (dias de atraso por equipamento, ordenado desc + linha cumulativa %)
+  // pareto de atrasos
   const atrasos = rows.filter(r=>r.status==='Vencida').map(r=>({
     label: `${r.eq.tag}`, dias: Math.abs(daysUntil(r.proxima))
   })).sort((a,b)=>b.dias-a.dias).slice(0,8);
@@ -2043,16 +2205,21 @@ function renderIndicadores(){
   const cumPct = atrasos.map(a=>{ acc += a.dias; return Math.round((acc/totalAtraso)*100); });
   renderParetoChart('chartPareto', atrasos.map(a=>a.label), atrasos.map(a=>a.dias), cumPct);
 
-  // cronograma: próximas 10 atividades (inclui vencidas) com offset de dias
+  // cronograma: próximas 10 atividades pendentes
   const cronograma = rows.filter(r=>r.proxima && r.status!=='Executada')
     .map(r=>({ label:`${r.eq.tag} · ${r.atividade}`, dias: daysUntil(r.proxima), status:r.status }))
     .sort((a,b)=>a.dias-b.dias).slice(0,10);
   renderCronogramaChart('chartCronograma', cronograma);
 
-  // aderência (donut on-time vs atrasado, baseado no histórico)
-  const execComFlag = historico.filter(h=>typeof h.noPrazo === 'boolean');
-  const noPrazo = execComFlag.filter(h=>h.noPrazo).length;
-  const atrasado = execComFlag.length - noPrazo;
+  // aderência — filtra histórico pelo responsável/área se aplicado
+  let hist = historico.filter(h=>typeof h.noPrazo === 'boolean');
+  if(fResp) hist = hist.filter(h=>h.responsavel === fResp);
+  if(fArea){
+    const tagsArea = equipamentos.filter(e=>e.area===fArea).map(e=>e.tag);
+    hist = hist.filter(h=>tagsArea.includes(h.tag));
+  }
+  const noPrazo = hist.filter(h=>h.noPrazo).length;
+  const atrasado = hist.length - noPrazo;
   renderDonutChart('chartAderencia', ['No Prazo','Atrasado'], [noPrazo, atrasado], ['#2ecc71','#e74c3c']);
 }
 
@@ -2163,6 +2330,133 @@ document.getElementById('btnExport').addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
   showToast('Backup exportado');
 });
+
+/* ===================== ALERTAS — EMAIL E WHATSAPP ===================== */
+function getEquipVencidos(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const em7   = new Date(hoje); em7.setDate(hoje.getDate()+7);
+  const vencidos = [], proximos = [];
+  plano.forEach(item => {
+    if(!item.proxima) return;
+    const d = new Date(item.proxima+'T00:00:00');
+    const eq = equipamentos.find(e=>e.id===item.equipId);
+    const tag = eq ? `${eq.tag} — ${eq.nome}` : item.equipId;
+    if(d < hoje)      vencidos.push({tag, atividade: item.atividade, data: item.proxima, responsavel: item.responsavel});
+    else if(d <= em7) proximos.push({tag, atividade: item.atividade, data: item.proxima, responsavel: item.responsavel});
+  });
+  return {vencidos, proximos};
+}
+
+function getPreventivesSemana(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const dom = new Date(hoje); dom.setDate(hoje.getDate() - hoje.getDay());
+  const sab = new Date(dom); sab.setDate(dom.getDate()+6);
+  return plano.filter(item => {
+    if(!item.proxima) return false;
+    const d = new Date(item.proxima+'T00:00:00');
+    return d >= dom && d <= sab;
+  }).map(item => {
+    const eq = equipamentos.find(e=>e.id===item.equipId);
+    return {...item, eq};
+  });
+}
+
+document.getElementById('btnEnviarAlertaEmail').addEventListener('click', ()=>{
+  const email = document.getElementById('alertEmail').value.trim();
+  if(!email){ showToast('Informe o email de destino'); return; }
+  const {vencidos, proximos} = getEquipVencidos();
+  if(!vencidos.length && !proximos.length){ showToast('✅ Nenhum equipamento vencido ou próximo do vencimento'); return; }
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  let corpo = `Relatório de Alertas de Manutenção Preventiva — ${hoje}\n\n`;
+  if(vencidos.length){
+    corpo += `⛔ VENCIDOS (${vencidos.length})\n${'─'.repeat(40)}\n`;
+    vencidos.forEach(v => { corpo += `• ${v.tag}\n  Atividade: ${v.atividade}\n  Venceu em: ${v.data}\n  Responsável: ${v.responsavel}\n\n`; });
+  }
+  if(proximos.length){
+    corpo += `⚠️ PRÓXIMOS DO VENCIMENTO — até 7 dias (${proximos.length})\n${'─'.repeat(40)}\n`;
+    proximos.forEach(p => { corpo += `• ${p.tag}\n  Atividade: ${p.atividade}\n  Vence em: ${p.data}\n  Responsável: ${p.responsavel}\n\n`; });
+  }
+  const assunto = encodeURIComponent(`[PCM Facilities] Alertas de Vencimento — ${hoje}`);
+  const body    = encodeURIComponent(corpo);
+  window.open(`mailto:${email}?subject=${assunto}&body=${body}`);
+});
+
+document.getElementById('btnEnviarWhatsApp').addEventListener('click', ()=>{
+  const num = document.getElementById('alertWhatsApp').value.replace(/\D/g,'');
+  if(num.length < 10){ showToast('Informe o número completo com DDI+DDD'); return; }
+  const semana = getPreventivesSemana();
+  const hoje = new Date();
+  const dom = new Date(hoje); dom.setDate(hoje.getDate()-hoje.getDay());
+  const sab = new Date(dom); sab.setDate(dom.getDate()+6);
+  const fmtSemana = `${dom.toLocaleDateString('pt-BR')} a ${sab.toLocaleDateString('pt-BR')}`;
+  let msg = `*📋 Preventivas da Semana — PCM Facilities*\n*Período:* ${fmtSemana}\n\n`;
+  if(!semana.length){
+    msg += `✅ Nenhuma preventiva programada para esta semana.`;
+  } else {
+    semana.forEach((item, i) => {
+      const tag  = item.eq ? `${item.eq.tag} — ${item.eq.nome}` : '—';
+      const area = item.eq?.area || '—';
+      const loc  = item.eq?.localizacao || '';
+      msg += `*${i+1}. ${tag}*\n`;
+      msg += `   📌 ${item.atividade}\n`;
+      msg += `   📅 ${item.proxima}\n`;
+      msg += `   👷 ${item.responsavel}\n`;
+      msg += `   🏭 ${area}${loc ? ` — ${loc}` : ''}\n\n`;
+    });
+  }
+  msg += `_Enviado pelo sistema PCM Facilities_`;
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
+});
+
+
+document.getElementById('btnExportHistCSV').addEventListener('click', ()=>{
+  if(!historico.length){ showToast('Nenhum registro no histórico para exportar'); return; }
+  const header = ['Data','TAG','Equipamento','Atividade','Responsável','No Prazo','Origem'];
+  const rows = historico.map(h=>[
+    h.data || '',
+    h.tag || '',
+    h.nome || '',
+    (h.atividade || '').replace(/;/g,' '),
+    h.responsavel || '',
+    h.noPrazo === true ? 'Sim' : h.noPrazo === false ? 'Não' : '',
+    h.origem || ''
+  ].map(v => `"${v}"`).join(';'));
+  const csv = '\uFEFF' + [header.join(';'), ...rows].join('\n'); // BOM para Excel reconhecer UTF-8
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `historico-execucoes-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`✅ ${historico.length} registros exportados para Excel`);
+});
+
+/* Limpar apenas o histórico (com exigência de baixar antes) */
+document.getElementById('btnClearHistorico').addEventListener('click', async ()=>{
+  if(!historico.length){ showToast('O histórico já está vazio'); return; }
+  const total = historico.length;
+  if(!confirm(`Você tem ${total} registros no histórico.\n\nAntes de limpar, recomendamos baixar o CSV (botão ao lado) para não perder os dados.\n\nDeseja continuar e apagar o histórico?`)) return;
+  if(!confirm(`Confirmação final: apagar permanentemente os ${total} registros do histórico de execuções?`)) return;
+  historico = [];
+  await saveHistorico();
+  renderHistTable();
+  renderDashboard();
+  renderIndicadores();
+  atualizarCountHistConfig();
+  showToast(`🗑 Histórico limpo — ${total} registros removidos`);
+});
+
+['fIndResp','fIndArea','fIndCategoria','fIndFreq','fIndStatus'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('change', renderIndicadores);
+});
+
+function atualizarCountHistConfig(){
+  const el = document.getElementById('countHistConfig');
+  if(el) el.textContent = `${historico.length} registro(s) no histórico`;
+}
+
 document.getElementById('importFile').addEventListener('change', (e)=>{
   const file = e.target.files[0];
   if(!file) return;
@@ -2512,6 +2806,7 @@ window.addEventListener('hashchange', ()=>{ handleHashRoute(); });
 /* ===================== INIT ===================== */
 async function renderAll(){
   atualizarStatusModoArmazenamento();
+  atualizarCountHistConfig();
   renderEquipTable();
   renderFilterOptions();
   renderPlanoEquipSelect();
