@@ -506,7 +506,14 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div class="panel" id="panel-plano">
     <h1 class="page-title">Plano Mestre de Preventivas</h1>
     <div class="form-grid">
-      <div class="field full"><label>Equipamento</label><select id="plEquip"></select></div>
+      <div class="field full">
+        <label>Filtrar por Área</label>
+        <select id="plFiltroArea" style="margin-bottom:6px;" onchange="filtrarEquipPlano()">
+          <option value="">Todas as áreas</option>
+        </select>
+        <label>Equipamento</label>
+        <select id="plEquip"></select>
+      </div>
       <div class="field"><label>Atividade</label><input id="plAtividade" placeholder="Ex: Troca de filtro de ar"></div>
       <div class="field"><label>Frequência</label>
         <select id="plFrequencia">
@@ -1308,6 +1315,28 @@ function popularFiltroArea(){
   sel.innerHTML = '<option value="">Todas</option>' + areas.map(a=>`<option value="${a}"${a===atual?' selected':''}>${a}</option>`).join('');
 }
 
+function filtrarEquipPlano(){
+  const area = document.getElementById('plFiltroArea').value;
+  const sel = document.getElementById('plEquip');
+  const cur = sel.value;
+  const lista = area
+    ? equipamentos.filter(e => e.area === area)
+    : equipamentos;
+  sel.innerHTML = lista.map(e =>
+    `<option value="${e.id}"${e.id===cur?' selected':''}>${e.tag} — ${e.nome}</option>`
+  ).join('');
+}
+
+function popularFiltroAreaPlano(){
+  const sel = document.getElementById('plFiltroArea');
+  if(!sel) return;
+  const areas = [...new Set(equipamentos.map(e=>e.area).filter(Boolean))].sort();
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todas as áreas</option>' +
+    areas.map(a=>`<option value="${a}"${a===cur?' selected':''}>${a}</option>`).join('');
+}
+
+
 function popularFiltroResp(){
   const sel = document.getElementById('fPlanoResp');
   if(!sel) return;
@@ -1380,9 +1409,11 @@ document.getElementById('searchEquip').addEventListener('input', renderEquipTabl
 });
 
 function renderPlanoEquipSelect(){
-  const sel = document.getElementById('plEquip');
-  sel.innerHTML = equipamentos.map(eq => `<option value="${eq.id}">${eq.tag} — ${eq.nome}</option>`).join('');
-  if(!equipamentos.length) sel.innerHTML = `<option value="">Cadastre um equipamento primeiro</option>`;
+  popularFiltroAreaPlano();
+  filtrarEquipPlano();
+  if(!equipamentos.length){
+    document.getElementById('plEquip').innerHTML = `<option value="">Cadastre um equipamento primeiro</option>`;
+  }
 }
 
 /* ===================== PLANO ===================== */
